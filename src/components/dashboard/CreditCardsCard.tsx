@@ -27,7 +27,7 @@ export default function CreditCardsCard({ cards }: CreditCardsCardProps) {
       }
     >
       {cards.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="textSecondary">
           Nenhum registro encontrado
         </Typography>
       ) : (
@@ -42,7 +42,7 @@ export default function CreditCardsCard({ cards }: CreditCardsCardProps) {
                   <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                     {card.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="textSecondary">
                     {card.brand}
                   </Typography>
                 </Box>
@@ -72,7 +72,7 @@ interface DetailProps {
 function Detail({ label, value }: DetailProps) {
   return (
     <Box>
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="caption" color="textSecondary">
         {label}
       </Typography>
       <Typography variant="body2" sx={{ fontWeight: 600 }}>

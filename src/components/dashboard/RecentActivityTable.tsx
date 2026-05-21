@@ -55,7 +55,7 @@ export default function RecentActivityTable({
             {paginatedTransactions.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5}>
-                  <Typography sx={{ py: 2, textAlign: "center" }} color="text.secondary">
+                  <Typography sx={{ py: 2, textAlign: "center" }} color="textSecondary">
                     Nenhum registro encontrado
                   </Typography>
                 </TableCell>
@@ -63,7 +63,11 @@ export default function RecentActivityTable({
             ) : (
               paginatedTransactions.map((item) => (
                 <TableRow key={item.id} hover>
-                  <TableCell>{getTransactionTypeLabel(item.type)}</TableCell>
+                  <TableCell
+                    sx={{
+                      color: item.type === "entrada" ? "success.main" : "error.main",
+                    }}
+                  >{getTransactionTypeLabel(item.type)}</TableCell>
                   <TableCell>{item.description}</TableCell>
                   <TableCell>{formatDateBR(item.date)}</TableCell>
                   <TableCell>

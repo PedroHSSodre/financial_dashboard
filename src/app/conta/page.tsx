@@ -33,7 +33,7 @@ export default function ContaPage() {
         <Stack spacing={2}>
           <Box>
             <Typography variant="h5">Conta</Typography>
-            <Typography color="text.secondary">
+            <Typography color="textSecondary">
               Defina seus dados para exibição no header.
             </Typography>
           </Box>
@@ -59,7 +59,7 @@ export default function ContaPage() {
           </Stack>
 
           {savedMessage ? (
-            <Typography color="success.main" variant="body2">
+            <Typography color="success" variant="body2">
               {savedMessage}
             </Typography>
           ) : null}

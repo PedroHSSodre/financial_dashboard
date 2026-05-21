@@ -56,12 +56,13 @@ export default function Header() {
                 key={link.href}
                 component={Link}
                 href={link.href}
-                color={isActive ? "text.primary" : "text.secondary"}
+                color={isActive ? "textPrimary" : "textSecondary"}
                 sx={{
                   fontWeight: isActive ? 700 : 500,
                   borderBottom: isActive ? "2px solid" : "2px solid transparent",
                   borderColor: isActive ? "primary.main" : "transparent",
                   pb: 0.5,
+                  textDecoration: "none",
                 }}
               >
                 {link.label}
@@ -87,7 +88,7 @@ export default function Header() {
             <Typography variant="body2" sx={{ fontWeight: 700 }}>
               {isLoaded && profile?.name ? profile.name : "Conta não definida"}
             </Typography>
-            <Typography color="text.secondary" variant="caption">
+            <Typography color="textSecondary" variant="caption">
               {isLoaded && profile?.email ? profile.email : "Defina na tela Conta"}
             </Typography>
           </Box>

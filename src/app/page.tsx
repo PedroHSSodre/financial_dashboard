@@ -1,7 +1,9 @@
 "use client";
 
 import { Box, Container, Typography } from "@mui/material";
+import { useState } from "react";
 import CreditCardsCard from "@/components/dashboard/CreditCardsCard";
+import CreateTransactionModal from "@/components/dashboard/CreateTransactionModal";
 import RecentActivityTable from "@/components/dashboard/RecentActivityTable";
 import SummaryCard from "@/components/dashboard/SummaryCard";
 import Header from "@/components/layout/Header";
@@ -9,8 +11,11 @@ import { formatCurrencyBRL } from "@/lib/format";
 import { useTransactions } from "@/hooks/useTransactions";
 
 export default function Home() {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const {
     mainWallet,
+    wallets,
+    userId,
     creditCards,
     transactions,
     paginatedTransactions,
@@ -22,6 +27,8 @@ export default function Home() {
     rowsPerPage,
     onPageChange,
     onRowsPerPageChange,
+    refresh,
+    isLoading,
   } = useTransactions();
 
   return (
@@ -30,7 +37,7 @@ export default function Home() {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Box sx={{ mb: 3 }}>
           <Typography variant="h5">Resumo financeiro</Typography>
-          <Typography color="text.secondary">
+          <Typography color="textSecondary">
             Entradas: {formatCurrencyBRL(totalIncome)} | Saídas:{" "}
             {formatCurrencyBRL(totalExpenses)}
           </Typography>
@@ -48,6 +55,8 @@ export default function Home() {
             wallet={mainWallet}
             latestEntries={latestEntries}
             latestExits={latestExits}
+            onNewRecord={() => setIsCreateModalOpen(true)}
+            isDisabled={isLoading || !mainWallet}
           />
           <CreditCardsCard cards={creditCards} />
         </Box>
@@ -61,6 +70,13 @@ export default function Home() {
           onRowsPerPageChange={onRowsPerPageChange}
         />
       </Container>
+      <CreateTransactionModal
+        open={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreated={refresh}
+        wallets={wallets}
+        userId={userId}
+      />
     </>
   );
 }
