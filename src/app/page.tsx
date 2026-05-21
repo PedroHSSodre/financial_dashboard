@@ -1,66 +1,66 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import { Box, Container, Typography } from "@mui/material";
+import CreditCardsCard from "@/components/dashboard/CreditCardsCard";
+import RecentActivityTable from "@/components/dashboard/RecentActivityTable";
+import SummaryCard from "@/components/dashboard/SummaryCard";
+import Header from "@/components/layout/Header";
+import { formatCurrencyBRL } from "@/lib/format";
+import { useTransactions } from "@/hooks/useTransactions";
 
 export default function Home() {
+  const {
+    mainWallet,
+    creditCards,
+    transactions,
+    paginatedTransactions,
+    latestEntries,
+    latestExits,
+    totalIncome,
+    totalExpenses,
+    page,
+    rowsPerPage,
+    onPageChange,
+    onRowsPerPageChange,
+  } = useTransactions();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      <Header />
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5">Resumo financeiro</Typography>
+          <Typography color="text.secondary">
+            Entradas: {formatCurrencyBRL(totalIncome)} | Saídas:{" "}
+            {formatCurrencyBRL(totalExpenses)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", lg: "1.2fr 1fr" },
+            gap: 3,
+            mb: 3,
+          }}
+        >
+          <SummaryCard
+            wallet={mainWallet}
+            latestEntries={latestEntries}
+            latestExits={latestExits}
+          />
+          <CreditCardsCard cards={creditCards} />
+        </Box>
+
+        <RecentActivityTable
+          transactions={transactions}
+          paginatedTransactions={paginatedTransactions}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
         />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </Container>
+    </>
   );
 }
