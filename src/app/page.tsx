@@ -68,6 +68,7 @@ export default function Home() {
           rowsPerPage={rowsPerPage}
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
+          refresh={refresh}
         />
       </Container>
       <CreateTransactionModal

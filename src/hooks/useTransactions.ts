@@ -1,11 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DEFAULT_USER_ID, seedFirstAccess } from "@/lib/db/seedFirstAccess";
-import { listCreditCardsByUser } from "@/lib/repositories/creditCardsRepository";
-import { listTransactionsByUserOrderedDesc } from "@/lib/repositories/transactionsRepository";
-import { listWalletsByUser } from "@/lib/repositories/walletsRepository";
+import { DEFAULT_USER_ID } from "@/lib/db/seedFirstAccess";
 import type { CreditCard, Transaction, Wallet } from "@/lib/types";
+import { loadDashboardData } from "@/lib/useCases/loadDashboardData";
 
 export function useTransactions() {
   const [page, setPage] = useState(0);
@@ -17,13 +15,8 @@ export function useTransactions() {
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
-    await seedFirstAccess(DEFAULT_USER_ID);
-
-    const [walletsData, transactionsData, creditCardsData] = await Promise.all([
-      listWalletsByUser(DEFAULT_USER_ID),
-      listTransactionsByUserOrderedDesc(DEFAULT_USER_ID),
-      listCreditCardsByUser(DEFAULT_USER_ID),
-    ]);
+    const { wallets: walletsData, transactions: transactionsData, creditCards: creditCardsData } =
+      await loadDashboardData(DEFAULT_USER_ID);
 
     setWallets(walletsData);
     setTransactions(transactionsData);
@@ -35,52 +28,42 @@ export function useTransactions() {
     void refresh();
   }, [refresh]);
 
-  const orderedTransactions = useMemo(
-    () =>
-      [...transactions].sort(
-        (left, right) =>
-          new Date(right.date).getTime() - new Date(left.date).getTime(),
-      ),
+  const latestEntries = useMemo(
+    () => transactions.filter((item) => item.type === "entrada").slice(0, 2),
     [transactions],
   );
 
-  const latestEntries = useMemo(
-    () =>
-      orderedTransactions.filter((item) => item.type === "entrada").slice(0, 2),
-    [orderedTransactions],
-  );
-
   const latestExits = useMemo(
-    () => orderedTransactions.filter((item) => item.type === "saida").slice(0, 2),
-    [orderedTransactions],
+    () => transactions.filter((item) => item.type === "saida").slice(0, 2),
+    [transactions],
   );
 
   const paginatedTransactions = useMemo(() => {
     const start = page * rowsPerPage;
-    return orderedTransactions.slice(start, start + rowsPerPage);
-  }, [orderedTransactions, page, rowsPerPage]);
+    return transactions.slice(start, start + rowsPerPage);
+  }, [transactions, page, rowsPerPage]);
 
   useEffect(() => {
     const start = page * rowsPerPage;
-    if (orderedTransactions.length > 0 && start >= orderedTransactions.length) {
+    if (transactions.length > 0 && start >= transactions.length) {
       setPage(0);
     }
-  }, [orderedTransactions.length, page, rowsPerPage]);
+  }, [transactions.length, page, rowsPerPage]);
 
   const totalIncome = useMemo(
-    () => sumTransactionsByType(orderedTransactions, "entrada"),
-    [orderedTransactions],
+    () => sumTransactionsByType(transactions, "entrada"),
+    [transactions],
   );
 
   const totalExpenses = useMemo(
-    () => sumTransactionsByType(orderedTransactions, "saida"),
-    [orderedTransactions],
+    () => sumTransactionsByType(transactions, "saida"),
+    [transactions],
   );
 
   return {
     mainWallet: wallets[0],
     creditCards,
-    transactions: orderedTransactions,
+    transactions,
     paginatedTransactions,
     latestEntries,
     latestExits,
@@ -98,7 +81,7 @@ export function useTransactions() {
       setPage(0);
     },
     isFirstAccess:
-      orderedTransactions.length === 0 &&
+      transactions.length === 0 &&
       creditCards.length === 0 &&
       (wallets[0]?.balance ?? 0) === 0,
   };

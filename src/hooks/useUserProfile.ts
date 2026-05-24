@@ -1,28 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  makeGetUserProfileUseCase,
+  makeSaveUserProfileUseCase,
+} from "@/core/application/useCases/user/userProfileUseCases";
+import { LocalStorageUserProfileRepository } from "@/lib/repositories/userProfileRepository";
 import type { UserProfile } from "@/lib/types";
 
-const STORAGE_KEY = "dashboard-user-profile";
+const userProfileRepository = new LocalStorageUserProfileRepository();
+const getUserProfile = makeGetUserProfileUseCase(userProfileRepository);
+const saveUserProfile = makeSaveUserProfileUseCase(userProfileRepository);
 
 export function useUserProfile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setProfile(JSON.parse(stored) as UserProfile);
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
+    setProfile(getUserProfile());
     setIsLoaded(true);
   }, []);
 
   const saveProfile = (nextProfile: UserProfile) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextProfile));
+    saveUserProfile(nextProfile);
     setProfile(nextProfile);
   };
 

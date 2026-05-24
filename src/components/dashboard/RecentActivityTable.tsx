@@ -2,6 +2,7 @@
 
 import {
   Chip,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -20,6 +21,9 @@ import {
   getTransactionTypeLabel,
 } from "@/lib/format";
 import type { Transaction } from "@/lib/types";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { deleteTransaction } from "@/lib/useCases/transaction/deleteTransaction";
+import { efetivateTransaction } from "@/lib/useCases/transaction/efetivateTransaction";
 
 interface RecentActivityTableProps {
   transactions: Transaction[];
@@ -28,6 +32,7 @@ interface RecentActivityTableProps {
   rowsPerPage: number;
   onPageChange: (value: number) => void;
   onRowsPerPageChange: (value: number) => void;
+  refresh: () => void;
 }
 
 export default function RecentActivityTable({
@@ -37,7 +42,17 @@ export default function RecentActivityTable({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  refresh,
 }: RecentActivityTableProps) {
+  const handleDelete = async (transaction: Transaction) => {
+    await deleteTransaction(transaction);
+    refresh();
+  };
+  const handleEfetivate = async (transaction: Transaction) => {
+    await efetivateTransaction(transaction);
+    refresh();
+  };
+
   return (
     <Card title="Atividade recente">
       <TableContainer component={Paper} variant="outlined">
@@ -49,6 +64,7 @@ export default function RecentActivityTable({
               <TableCell>Data</TableCell>
               <TableCell>Status</TableCell>
               <TableCell align="right">Valor</TableCell>
+              <TableCell align="right">Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -76,6 +92,7 @@ export default function RecentActivityTable({
                       color={item.status === "efetivada" ? "success" : "warning"}
                       label={getStatusLabel(item.status)}
                       variant="outlined"
+                      onClick={() => handleEfetivate(item)}
                     />
                   </TableCell>
                   <TableCell
@@ -87,6 +104,11 @@ export default function RecentActivityTable({
                   >
                     {item.type === "entrada" ? "+" : "-"}
                     {formatCurrencyBRL(item.value)}
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton size="small" color="error" onClick={() => handleDelete(item)}>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))

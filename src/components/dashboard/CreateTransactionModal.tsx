@@ -7,7 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
+  FormControl,    
   InputLabel,
   MenuItem,
   Select,
@@ -15,7 +15,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { createTransaction } from "@/lib/useCases/createTransaction";
+import { createTransaction } from "@/lib/useCases/transaction/createTransaction";
 import type { TransactionStatus, TransactionType, Wallet } from "@/lib/types";
 
 interface CreateTransactionModalProps {
