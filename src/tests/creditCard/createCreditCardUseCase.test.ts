@@ -8,6 +8,9 @@ function makeSut() {
   const creditCardRepository: CreditCardRepository = {
     listByUser: jest.fn(),
     create: jest.fn(async (creditCard) => creditCard),
+    getById: jest.fn(),
+    updateLimit: jest.fn(),
+    updateUsedLimit: jest.fn(),
   };
 
   const generateId = jest.fn(() => "credit-card-id");
