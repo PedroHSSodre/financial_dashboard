@@ -1,12 +1,9 @@
-import type {
-  Transaction,
-  TransactionStatus,
-  TransactionType,
-} from "@/lib/types";
+import type { TransactionStatus, TransactionType } from "@/lib/types";
 import type {
   TransactionRepository,
   WalletRepository,
 } from "@/core/application/ports/financialRepositories";
+import { revertTransactionFromBalance } from "@/core/domain/services/walletBalance";
 
 export interface DeleteTransactionInput {
   id: string;
@@ -44,14 +41,8 @@ export function makeDeleteTransactionUseCase({
         throw new Error("Carteira não encontrada.");
       }
       
-      const nextBalance = calculateWalletBalance(wallet.balance, input);
+      const nextBalance = revertTransactionFromBalance(wallet.balance, input);
       await walletRepository.updateBalance(wallet.id, nextBalance);
     });
   };
-}
-
-function calculateWalletBalance(balance: number, transaction: Transaction) {
-  return transaction.type === "entrada"
-    ? balance - transaction.value
-    : balance + transaction.value;
 }

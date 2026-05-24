@@ -7,6 +7,7 @@ import type {
   TransactionRepository,
   WalletRepository,
 } from "@/core/application/ports/financialRepositories";
+import { applyTransactionToBalance } from "@/core/domain/services/walletBalance";
 
 export interface EfetivateTransactionInput {
   id: string;
@@ -44,14 +45,9 @@ export function makeEfetivateTransactionUseCase({
         throw new Error("Carteira não encontrada.");
       }
       
-      const nextBalance = calculateWalletBalance(wallet.balance, input);
+      const nextBalance = applyTransactionToBalance(wallet.balance, input);
       await walletRepository.updateBalance(wallet.id, nextBalance);
     });
   };
 }
 
-function calculateWalletBalance(balance: number, transaction: Transaction) {
-  return transaction.type === "entrada"
-    ? balance + transaction.value
-    : balance - transaction.value;
-}

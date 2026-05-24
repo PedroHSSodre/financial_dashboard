@@ -7,6 +7,7 @@ import type {
   TransactionRepository,
   WalletRepository,
 } from "@/core/application/ports/financialRepositories";
+import { applyTransactionToBalance } from "@/core/domain/services/walletBalance";
 
 export interface CreateTransactionInput {
   userId: string;
@@ -60,16 +61,10 @@ export function makeCreateTransactionUseCase({
         throw new Error("Carteira não encontrada.");
       }
 
-      const nextBalance = calculateWalletBalance(wallet.balance, transaction);
+      const nextBalance = applyTransactionToBalance(wallet.balance, transaction);
       await walletRepository.updateBalance(wallet.id, nextBalance);
     });
   };
-}
-
-function calculateWalletBalance(balance: number, transaction: Transaction) {
-  return transaction.type === "entrada"
-    ? balance + transaction.value
-    : balance - transaction.value;
 }
 
 function validateInput(input: CreateTransactionInput) {
