@@ -3,6 +3,7 @@
 import { Box, Container, Typography } from "@mui/material";
 import { useState } from "react";
 import CreditCardsCard from "@/components/dashboard/CreditCardsCard";
+import CreateCreditCardModal from "@/components/dashboard/CreateCreditCardModal";
 import CreateTransactionModal from "@/components/dashboard/CreateTransactionModal";
 import RecentActivityTable from "@/components/dashboard/RecentActivityTable";
 import SummaryCard from "@/components/dashboard/SummaryCard";
@@ -12,6 +13,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 
 export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateCreditCardModalOpen, setIsCreateCreditCardModalOpen] = useState(false);
   const {
     mainWallet,
     wallets,
@@ -58,7 +60,11 @@ export default function Home() {
             onNewRecord={() => setIsCreateModalOpen(true)}
             isDisabled={isLoading || !mainWallet}
           />
-          <CreditCardsCard cards={creditCards} />
+          <CreditCardsCard
+            cards={creditCards}
+            onNewCard={() => setIsCreateCreditCardModalOpen(true)}
+            isDisabled={isLoading || wallets.length === 0}
+          />
         </Box>
 
         <RecentActivityTable
@@ -74,6 +80,13 @@ export default function Home() {
       <CreateTransactionModal
         open={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        onCreated={refresh}
+        wallets={wallets}
+        userId={userId}
+      />
+      <CreateCreditCardModal
+        open={isCreateCreditCardModalOpen}
+        onClose={() => setIsCreateCreditCardModalOpen(false)}
         onCreated={refresh}
         wallets={wallets}
         userId={userId}

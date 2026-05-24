@@ -14,14 +14,26 @@ import type { CreditCard } from "@/lib/types";
 
 interface CreditCardsCardProps {
   cards: CreditCard[];
+  onNewCard: () => void;
+  isDisabled?: boolean;
 }
 
-export default function CreditCardsCard({ cards }: CreditCardsCardProps) {
+export default function CreditCardsCard({
+  cards,
+  onNewCard,
+  isDisabled,
+}: CreditCardsCardProps) {
   return (
     <Card
       title="Cartões de crédito"
       action={
-        <Button size="small" variant="contained" startIcon={<AddRoundedIcon />}>
+        <Button
+          size="small"
+          variant="contained"
+          startIcon={<AddRoundedIcon />}
+          onClick={onNewCard}
+          disabled={isDisabled}
+        >
           Novo cartão
         </Button>
       }

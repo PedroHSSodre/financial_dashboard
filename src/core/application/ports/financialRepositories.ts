@@ -16,4 +16,5 @@ export interface WalletRepository {
 
 export interface CreditCardRepository {
   listByUser(userId: string): Promise<CreditCard[]>;
+  create(creditCard: CreditCard): Promise<CreditCard>;
 }
