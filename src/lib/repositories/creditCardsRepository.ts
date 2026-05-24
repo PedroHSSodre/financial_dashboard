@@ -11,6 +11,18 @@ export class DexieCreditCardsRepository implements CreditCardRepository {
     await db.creditCards.add(creditCard);
     return creditCard;
   }
+
+  async getById(creditCardId: string): Promise<CreditCard | undefined> {
+    return db.creditCards.get(creditCardId);
+  }
+
+  async updateLimit(creditCardId: string, nextLimit: number): Promise<void> {
+    await db.creditCards.update(creditCardId, { limit: nextLimit });
+  }
+
+  async updateUsedLimit(creditCardId: string, nextUsedLimit: number): Promise<void> {
+    await db.creditCards.update(creditCardId, { limitUsed: nextUsedLimit });
+  }
 }
 
 const repository = new DexieCreditCardsRepository();
@@ -25,4 +37,12 @@ export async function createCreditCardRecord(
   creditCard: CreditCard,
 ): Promise<void> {
   await repository.create(creditCard);
+}
+
+export async function getCreditCardById(creditCardId: string): Promise<CreditCard | undefined> {
+  return repository.getById(creditCardId);
+}
+
+export async function updateCreditCardLimit(creditCardId: string, nextLimit: number): Promise<void> {
+  await repository.updateLimit(creditCardId, nextLimit);
 }

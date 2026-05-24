@@ -24,6 +24,8 @@ export interface Transaction {
   description: string;
   date: string;
   value: number;
+  isCreditCard: boolean;
+  creditCardId?: string;
 }
 
 export interface CreditCard {

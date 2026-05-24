@@ -82,6 +82,7 @@ export default function Home() {
         onClose={() => setIsCreateModalOpen(false)}
         onCreated={refresh}
         wallets={wallets}
+        creditCards={creditCards}
         userId={userId}
       />
       <CreateCreditCardModal

@@ -16,12 +16,13 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { createTransaction } from "@/lib/useCases/transaction/createTransaction";
-import type { TransactionStatus, TransactionType, Wallet } from "@/lib/types";
+import type { CreditCard, TransactionStatus, TransactionType, Wallet } from "@/lib/types";
 
 interface CreateTransactionModalProps {
   open: boolean;
   userId: string;
   wallets: Wallet[];
+  creditCards: CreditCard[];
   onClose: () => void;
   onCreated: () => Promise<void>;
 }
@@ -30,10 +31,12 @@ export default function CreateTransactionModal({
   open,
   userId,
   wallets,
+  creditCards,
   onClose,
   onCreated,
 }: CreateTransactionModalProps) {
   const [walletId, setWalletId] = useState("");
+  const [creditCardId, setCreditCardId] = useState<string | undefined>(undefined);
   const [type, setType] = useState<TransactionType>("entrada");
   const [status, setStatus] = useState<TransactionStatus>("efetivada");
   const [description, setDescription] = useState("");
@@ -43,6 +46,7 @@ export default function CreateTransactionModal({
   const [isSaving, setIsSaving] = useState(false);
 
   const walletOptions = useMemo(() => wallets, [wallets]);
+  const creditCardOptions = useMemo(() => creditCards, [creditCards]);
 
   useEffect(() => {
     if (!open) {
@@ -57,38 +61,37 @@ export default function CreateTransactionModal({
     setDate(new Date().toISOString().slice(0, 10));
     setValue("");
     setErrorMessage("");
+
+    return () => {
+      setCreditCardId(undefined);
+    };
   }, [open, walletOptions]);
 
   const handleSubmit = async () => {
     setErrorMessage("");
-    const numericValue = Number(value);
-
-    if (!walletId) {
+    const nextType = creditCardId ? "saida" : type;
+    const nextWalletId = creditCardId ? creditCardOptions.find((creditCard) => creditCard.id === creditCardId)?.walletId : walletId;
+    
+    if(!nextWalletId) {
       setErrorMessage("Selecione uma carteira.");
-      return;
-    }
-
-    if (!date) {
-      setErrorMessage("Informe a data da movimentação.");
-      return;
-    }
-
-    if (!Number.isFinite(numericValue) || numericValue <= 0) {
-      setErrorMessage("O valor deve ser maior que zero.");
       return;
     }
 
     try {
       setIsSaving(true);
-      await createTransaction({
+      const transaction = {
         userId,
-        walletId,
-        type,
+        walletId: nextWalletId,
+        type: nextType,
         status,
         description,
         date,
-        value: numericValue,
-      });
+        value: Number(value),
+        isCreditCard: !!creditCardId,
+        creditCardId,
+      }
+      console.log(transaction);
+      await createTransaction(transaction);
       await onCreated();
       onClose();
     } catch (error) {
@@ -108,33 +111,54 @@ export default function CreateTransactionModal({
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
           <FormControl fullWidth>
-            <InputLabel id="wallet-label">Carteira</InputLabel>
+            <InputLabel id="credit-card-label">Cartão de crédito</InputLabel>
             <Select
-              labelId="wallet-label"
-              label="Carteira"
-              value={walletId}
-              onChange={(event) => setWalletId(event.target.value)}
+              labelId="credit-card-label"
+              label="Cartão de crédito"
+              value={creditCardId ?? ""}
+              onChange={(event) => setCreditCardId(event.target.value)}
             >
-              {walletOptions.map((wallet) => (
-                <MenuItem key={wallet.id} value={wallet.id}>
-                  {wallet.name}
+              {creditCardOptions.map((creditCard) => (
+                <MenuItem key={creditCard.id} value={creditCard.id}>
+                  {creditCard.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
 
-          <FormControl fullWidth>
-            <InputLabel id="type-label">Tipo</InputLabel>
-            <Select
-              labelId="type-label"
-              label="Tipo"
-              value={type}
-              onChange={(event) => setType(event.target.value as TransactionType)}
-            >
-              <MenuItem value="entrada">Entrada</MenuItem>
-              <MenuItem value="saida">Saída</MenuItem>
-            </Select>
-          </FormControl>
+
+
+          {!creditCardId ? 
+            <>
+              <FormControl fullWidth>
+                <InputLabel id="wallet-label">Carteira</InputLabel>
+                <Select
+                  labelId="wallet-label"
+                  label="Carteira"
+                  value={walletId}
+                  onChange={(event) => setWalletId(event.target.value)}
+                >
+                  {walletOptions.map((wallet) => (
+                    <MenuItem key={wallet.id} value={wallet.id}>
+                      {wallet.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel id="type-label">Tipo</InputLabel>
+                <Select
+                  labelId="type-label"
+                  label="Tipo"
+                  value={type}
+                  onChange={(event) => setType(event.target.value as TransactionType)}
+                >
+                  <MenuItem value="entrada">Entrada</MenuItem>
+                  <MenuItem value="saida">Saída</MenuItem>
+                </Select>
+              </FormControl>
+            </> 
+          : null}
 
           <TextField
             label="Descrição"

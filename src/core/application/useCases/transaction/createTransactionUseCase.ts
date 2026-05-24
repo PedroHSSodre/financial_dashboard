@@ -4,10 +4,12 @@ import type {
   TransactionType,
 } from "@/lib/types";
 import type {
+  CreditCardRepository,
   TransactionRepository,
   WalletRepository,
 } from "@/core/application/ports/financialRepositories";
 import { applyTransactionToBalance } from "@/core/domain/services/walletBalance";
+import { applyTransactionToUsedLimit } from "@/core/domain/services/creditCardBalance";
 
 export interface CreateTransactionInput {
   userId: string;
@@ -17,11 +19,14 @@ export interface CreateTransactionInput {
   description: string;
   date: string;
   value: number;
+  isCreditCard: boolean;
+  creditCardId?: string;
 }
 
 interface CreateTransactionDependencies {
   transactionRepository: TransactionRepository;
   walletRepository: WalletRepository;
+  creditCardRepository: CreditCardRepository;
   runInTransaction<T>(operation: () => Promise<T>): Promise<T>;
   generateId(): string;
 }
@@ -29,6 +34,7 @@ interface CreateTransactionDependencies {
 export function makeCreateTransactionUseCase({
   transactionRepository,
   walletRepository,
+  creditCardRepository,
   runInTransaction,
   generateId,
 }: CreateTransactionDependencies) {
@@ -44,6 +50,8 @@ export function makeCreateTransactionUseCase({
       description: input.description.trim() || "Sem descrição",
       date: input.date,
       value: input.value,
+      isCreditCard: input.isCreditCard,
+      creditCardId: input.isCreditCard ? input.creditCardId : undefined,
     };
 
     await runInTransaction(async () => {
@@ -60,6 +68,28 @@ export function makeCreateTransactionUseCase({
       if (!wallet) {
         throw new Error("Carteira não encontrada.");
       }
+
+      if(!transaction.isCreditCard) {
+        const nextBalance = applyTransactionToBalance(wallet.balance, transaction);
+        await walletRepository.updateBalance(wallet.id, nextBalance);
+        return;
+      }
+
+      if(!transaction.creditCardId) {
+        throw new Error("Cartão de crédito não informado.");
+      }
+
+      const creditCard = await creditCardRepository.getById(transaction.creditCardId);
+      
+      if (!creditCard) {
+        throw new Error("Cartão de crédito não encontrado.");
+      }
+
+      const nextLimit = applyTransactionToBalance(creditCard.limit, transaction);
+      await creditCardRepository.updateLimit(creditCard.id, nextLimit);
+
+      const nextUsedLimit = applyTransactionToUsedLimit(creditCard.limitUsed, transaction);
+      await creditCardRepository.updateUsedLimit(creditCard.id, nextUsedLimit);
 
       const nextBalance = applyTransactionToBalance(wallet.balance, transaction);
       await walletRepository.updateBalance(wallet.id, nextBalance);
