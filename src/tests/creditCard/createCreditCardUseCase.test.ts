@@ -25,6 +25,7 @@ function makeSut() {
     limit: 5000,
     closingDay: 10,
     dueDay: 20,
+    limitUsed: 0
   };
 
   return {
@@ -51,6 +52,7 @@ describe("makeCreateCreditCardUseCase", () => {
       limit: validInput.limit,
       closingDay: validInput.closingDay,
       dueDay: validInput.dueDay,
+      limitUsed: validInput.limitUsed,
     });
     expect(result).toEqual({
       id: "credit-card-id",
@@ -61,6 +63,7 @@ describe("makeCreateCreditCardUseCase", () => {
       limit: validInput.limit,
       closingDay: validInput.closingDay,
       dueDay: validInput.dueDay,
+      limitUsed: validInput.limitUsed,
     });
   });
 

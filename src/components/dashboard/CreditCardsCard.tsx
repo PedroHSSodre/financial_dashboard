@@ -67,6 +67,7 @@ export default function CreditCardsCard({
                 <Detail label="Limite" value={formatCurrencyBRL(card.limit)} />
                 <Detail label="Fechamento" value={`Dia ${card.closingDay}`} />
                 <Detail label="Vencimento" value={`Dia ${card.dueDay}`} />
+                <Detail label="Utilizado" value={formatCurrencyBRL(card.limitUsed)} />
               </Stack>
             </Paper>
           ))}

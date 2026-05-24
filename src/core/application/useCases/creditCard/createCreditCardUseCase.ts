@@ -9,6 +9,7 @@ export interface CreateCreditCardInput {
   limit: number;
   closingDay: number;
   dueDay: number;
+  limitUsed: number;
 }
 
 interface CreateCreditCardDependencies {
@@ -30,6 +31,7 @@ export function makeCreateCreditCardUseCase({
       name: input.name,
       brand: input.brand,
       limit: input.limit,
+      limitUsed: input.limitUsed,
       closingDay: input.closingDay,
       dueDay: input.dueDay,
     };
@@ -75,5 +77,13 @@ function validateInput(input: CreateCreditCardInput) {
 
   if (!Number.isFinite(input.limit) || input.limit <= 0) {
     throw new Error("O limite deve ser maior que zero.");
+  }
+
+  if (!Number.isFinite(input.limitUsed) || input.limitUsed < 0) {
+    throw new Error("O limite utilizado deve ser maior ou igual a zero.");
+  }
+
+  if (input.limitUsed > input.limit) {
+    throw new Error("O limite utilizado não pode ser maior que o limite do cartão.");
   }
 }

@@ -33,6 +33,7 @@ export interface CreditCard {
   name: string;
   brand: string;
   limit: number;
+  limitUsed: number;
   closingDay: number;
   dueDay: number;
 }

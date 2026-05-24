@@ -39,6 +39,7 @@ export default function CreateCreditCardModal({
   const [limit, setLimit] = useState("");
   const [closingDay, setClosingDay] = useState("");
   const [dueDay, setDueDay] = useState("");
+  const [limitUsed, setLimitUsed] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -55,6 +56,7 @@ export default function CreateCreditCardModal({
     setLimit("");
     setClosingDay("");
     setDueDay("");
+    setLimitUsed("");
     setErrorMessage("");
   }, [open, walletOptions]);
 
@@ -70,6 +72,7 @@ export default function CreateCreditCardModal({
         limit: Number(limit),
         closingDay: Number(closingDay),
         dueDay: Number(dueDay),
+        limitUsed: Number(limitUsed),
       });
       await onCreated();
       onClose();
@@ -146,6 +149,14 @@ export default function CreateCreditCardModal({
               onChange={(event) => setDueDay(event.target.value)}
               fullWidth
               slotProps={{ htmlInput: { min: 1, max: 31, step: 1 } }}
+            />
+            <TextField
+              type="number"
+              label="Limite utilizado (R$)"
+              value={limitUsed}
+              onChange={(event) => setLimitUsed(event.target.value)}
+              fullWidth
+              slotProps={{ htmlInput: { min: 0, step: "0.01" } }}
             />
           </Stack>
         </Stack>
