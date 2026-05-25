@@ -19,6 +19,7 @@ export interface CreditCardRepository {
   listByUser(userId: string): Promise<CreditCard[]>;
   create(creditCard: CreditCard): Promise<CreditCard>;
   getById(creditCardId: string): Promise<CreditCard | undefined>;
-  updateLimit(creditCardId: string, nextLimit: number): Promise<void>;
+  updateRemainingLimit(creditCardId: string, nextLimit: number): Promise<void>;
   updateUsedLimit(creditCardId: string, nextUsedLimit: number): Promise<void>;
+  update(creditCardId: string, creditCard: CreditCard): Promise<void>;
 }

@@ -63,7 +63,7 @@ export function makeDeleteTransactionUseCase({
       }
 
       const nextLimit = revertTransactionFromBalance(creditCard.remainingLimit, input);
-      await creditCardRepository.updateLimit(creditCard.id, nextLimit);
+      await creditCardRepository.updateRemainingLimit(creditCard.id, nextLimit);
 
       const nextUsedLimit = revertTransactionFromUsedLimit(creditCard.limitUsed, input);
       await creditCardRepository.updateUsedLimit(creditCard.id, nextUsedLimit);

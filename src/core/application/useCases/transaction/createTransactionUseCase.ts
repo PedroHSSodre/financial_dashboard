@@ -85,8 +85,8 @@ export function makeCreateTransactionUseCase({
         throw new Error("Cartão de crédito não encontrado.");
       }
 
-      const nextLimit = applyTransactionToBalance(creditCard.limit, transaction);
-      await creditCardRepository.updateLimit(creditCard.id, nextLimit);
+      const nextLimit = applyTransactionToBalance(creditCard.limit - creditCard.limitUsed, transaction);
+      await creditCardRepository.updateRemainingLimit(creditCard.id, nextLimit);
 
       const nextUsedLimit = applyTransactionToUsedLimit(creditCard.limitUsed, transaction);
       await creditCardRepository.updateUsedLimit(creditCard.id, nextUsedLimit);

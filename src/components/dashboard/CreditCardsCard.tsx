@@ -15,12 +15,14 @@ import type { CreditCard } from "@/lib/types";
 interface CreditCardsCardProps {
   cards: CreditCard[];
   onNewCard: () => void;
+  onEditCard: (card: CreditCard) => void;
   isDisabled?: boolean;
 }
 
 export default function CreditCardsCard({
   cards,
   onNewCard,
+  onEditCard,
   isDisabled,
 }: CreditCardsCardProps) {
   return (
@@ -58,7 +60,12 @@ export default function CreditCardsCard({
                     {card.brand}
                   </Typography>
                 </Box>
-                <IconButton size="small" aria-label="Editar cartão">
+                <IconButton
+                  size="small"
+                  aria-label="Editar cartão"
+                  onClick={() => onEditCard(card)}
+                  disabled={isDisabled}
+                >
                   <EditRoundedIcon fontSize="small" />
                 </IconButton>
               </Stack>

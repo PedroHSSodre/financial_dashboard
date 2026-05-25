@@ -5,15 +5,18 @@ import { useState } from "react";
 import CreditCardsCard from "@/components/dashboard/CreditCardsCard";
 import CreateCreditCardModal from "@/components/dashboard/CreateCreditCardModal";
 import CreateTransactionModal from "@/components/dashboard/CreateTransactionModal";
+import EditCreditCardModal from "@/components/dashboard/EditCreditCardModal";
 import RecentActivityTable from "@/components/dashboard/RecentActivityTable";
 import SummaryCard from "@/components/dashboard/SummaryCard";
 import Header from "@/components/layout/Header";
 import { formatCurrencyBRL } from "@/lib/format";
 import { useTransactions } from "@/hooks/useTransactions";
+import type { CreditCard } from "@/lib/types";
 
 export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCreateCreditCardModalOpen, setIsCreateCreditCardModalOpen] = useState(false);
+  const [editingCreditCard, setEditingCreditCard] = useState<CreditCard | null>(null);
   const {
     mainWallet,
     wallets,
@@ -63,6 +66,7 @@ export default function Home() {
           <CreditCardsCard
             cards={creditCards}
             onNewCard={() => setIsCreateCreditCardModalOpen(true)}
+            onEditCard={(card) => setEditingCreditCard(card)}
             isDisabled={isLoading || wallets.length === 0}
           />
         </Box>
@@ -89,6 +93,14 @@ export default function Home() {
         open={isCreateCreditCardModalOpen}
         onClose={() => setIsCreateCreditCardModalOpen(false)}
         onCreated={refresh}
+        wallets={wallets}
+        userId={userId}
+      />
+      <EditCreditCardModal
+        open={Boolean(editingCreditCard)}
+        card={editingCreditCard}
+        onClose={() => setEditingCreditCard(null)}
+        onUpdated={refresh}
         wallets={wallets}
         userId={userId}
       />

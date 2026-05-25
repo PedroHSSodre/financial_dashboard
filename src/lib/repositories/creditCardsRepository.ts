@@ -16,11 +16,15 @@ export class DexieCreditCardsRepository implements CreditCardRepository {
     return db.creditCards.get(creditCardId);
   }
 
-  async updateLimit(creditCardId: string, nextLimit: number): Promise<void> {
+  async updateRemainingLimit(creditCardId: string, nextLimit: number): Promise<void> {
     await db.creditCards.update(creditCardId, { remainingLimit: nextLimit });
   }
 
   async updateUsedLimit(creditCardId: string, nextUsedLimit: number): Promise<void> {
     await db.creditCards.update(creditCardId, { limitUsed: nextUsedLimit });
+  }
+
+  async update(creditCardId: string, creditCard: CreditCard): Promise<void> {
+    await db.creditCards.update(creditCardId, creditCard);
   }
 }
