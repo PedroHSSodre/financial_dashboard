@@ -85,6 +85,10 @@ export function makeCreateTransactionUseCase({
         throw new Error("Cartão de crédito não encontrado.");
       }
 
+      if(transaction.value > creditCard.remainingLimit) {
+        throw new Error("O valor da transação não pode ser maior que o limite restante do cartão.");
+      }
+
       const nextLimit = applyTransactionToBalance(creditCard.limit - creditCard.limitUsed, transaction);
       await creditCardRepository.updateRemainingLimit(creditCard.id, nextLimit);
 
@@ -108,5 +112,9 @@ function validateInput(input: CreateTransactionInput) {
 
   if (!Number.isFinite(input.value) || input.value <= 0) {
     throw new Error("O valor deve ser maior que zero.");
+  }
+
+  if(input.isCreditCard && !input.creditCardId) {
+    throw new Error("Informe o cartão de crédito.");
   }
 }
