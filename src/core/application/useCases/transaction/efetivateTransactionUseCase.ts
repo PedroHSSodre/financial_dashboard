@@ -68,7 +68,7 @@ export function makeEfetivateTransactionUseCase({
       }
 
       const nextLimit = applyTransactionToBalance(creditCard.limit, input);
-      await creditCardRepository.updateLimit(creditCard.id, nextLimit);
+      await creditCardRepository.updateRemainingLimit(creditCard.id, nextLimit);
 
       const nextUsedLimit = applyTransactionToUsedLimit(creditCard.limitUsed, input);
       await creditCardRepository.updateUsedLimit(creditCard.id, nextUsedLimit);

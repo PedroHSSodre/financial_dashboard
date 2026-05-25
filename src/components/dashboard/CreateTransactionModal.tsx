@@ -90,7 +90,6 @@ export default function CreateTransactionModal({
         isCreditCard: !!creditCardId,
         creditCardId,
       }
-      console.log(transaction);
       await createTransaction(transaction);
       await onCreated();
       onClose();
