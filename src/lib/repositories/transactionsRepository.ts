@@ -26,18 +26,8 @@ export class DexieTransactionsRepository implements TransactionRepository {
   private async listByUser(userId: string): Promise<Transaction[]> {
     return db.transactions.where("userId").equals(userId).toArray();
   }
-}
 
-const repository = new DexieTransactionsRepository();
-
-export async function listTransactionsByUserOrderedDesc(
-  userId: string,
-): Promise<Transaction[]> {
-  return repository.listByUserOrderedDesc(userId);
-}
-
-export async function createTransactionRecord(
-  transaction: Transaction,
-): Promise<void> {
-  await repository.create(transaction);
+  async getById(transactionId: string): Promise<Transaction | undefined> {
+    return db.transactions.get(transactionId);
+  }
 }

@@ -4,6 +4,7 @@ import {
   Chip,
   IconButton,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -18,12 +19,15 @@ import {
   formatCurrencyBRL,
   formatDateBR,
   getStatusLabel,
-  getTransactionTypeLabel,
 } from "@/lib/format";
-import type { Transaction } from "@/lib/types";
+import type { Transaction, TransactionDetails } from "@/lib/types";
 import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { deleteTransaction } from "@/lib/useCases/transaction/deleteTransaction";
 import { efetivateTransaction } from "@/lib/useCases/transaction/efetivateTransaction";
+import { getTransaction } from "@/lib/useCases/transaction/getTransaction";
+import { useState } from "react";
+import TransactionDetailsModal from "@/components/dashboard/TransactionDetailsModal";
 
 interface RecentActivityTableProps {
   transactions: Transaction[];
@@ -44,6 +48,11 @@ export default function RecentActivityTable({
   onRowsPerPageChange,
   refresh,
 }: RecentActivityTableProps) {
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<TransactionDetails | null>(null);
+  const [detailsError, setDetailsError] = useState("");
+
   const handleDelete = async (transaction: Transaction) => {
     await deleteTransaction(transaction);
     refresh();
@@ -51,6 +60,34 @@ export default function RecentActivityTable({
   const handleEfetivate = async (transaction: Transaction) => {
     await efetivateTransaction(transaction);
     refresh();
+  };
+  const handleOpenDetails = async (transactionId: string) => {
+    setDetailsError("");
+    setIsDetailsModalOpen(true);
+    setIsLoadingDetails(true);
+
+    try {
+      const transaction = await getTransaction(transactionId);
+
+      if (!transaction) {
+        setSelectedTransaction(null);
+        setDetailsError("Transação não encontrada.");
+        return;
+      }
+
+      setSelectedTransaction(transaction);
+    } catch {
+      setSelectedTransaction(null);
+      setDetailsError("Não foi possível carregar os detalhes da transação.");
+    } finally {
+      setIsLoadingDetails(false);
+    }
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedTransaction(null);
+    setDetailsError("");
   };
 
   return (
@@ -83,7 +120,19 @@ export default function RecentActivityTable({
                     sx={{
                       color: item.type === "entrada" ? "success.main" : "error.main",
                     }}
-                  >{getTransactionTypeLabel(item.type)}</TableCell>
+                  >
+                    {item.isCreditCard ? <Chip
+                      size="small"
+                      color="info"
+                      label="Cartão de crédito"
+                      variant="outlined"
+                    /> : <Chip
+                      size="small"
+                      color="primary"
+                      label="Debito"
+                      variant="outlined"
+                    />}
+                  </TableCell>
                   <TableCell>{item.description}</TableCell>
                   <TableCell>{formatDateBR(item.date)}</TableCell>
                   <TableCell>
@@ -106,9 +155,18 @@ export default function RecentActivityTable({
                     {formatCurrencyBRL(item.value)}
                   </TableCell>
                   <TableCell align="right">
-                    <IconButton size="small" color="error" onClick={() => handleDelete(item)}>
-                      <DeleteIcon />
-                    </IconButton>
+                    <Stack direction="row" spacing={0.5} sx={{ justifyContent: "flex-end" }}>
+                      <IconButton
+                        size="small"
+                        color="info"
+                        onClick={() => handleOpenDetails(item.id)}
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                      <IconButton size="small" color="error" onClick={() => handleDelete(item)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))
@@ -128,6 +186,14 @@ export default function RecentActivityTable({
         }
         rowsPerPageOptions={[5, 10, 20]}
         labelRowsPerPage="Itens por página"
+      />
+
+      <TransactionDetailsModal
+        open={isDetailsModalOpen}
+        isLoading={isLoadingDetails}
+        errorMessage={detailsError}
+        transaction={selectedTransaction}
+        onClose={handleCloseDetails}
       />
     </Card>
   );

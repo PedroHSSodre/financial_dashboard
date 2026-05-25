@@ -20,22 +20,3 @@ export class DexieWalletsRepository implements WalletRepository {
     await db.wallets.update(walletId, { balance: nextBalance });
   }
 }
-
-const repository = new DexieWalletsRepository();
-
-export async function listWalletsByUser(userId: string): Promise<Wallet[]> {
-  return repository.listByUser(userId);
-}
-
-export async function getMainWalletByUser(
-  userId: string,
-): Promise<Wallet | undefined> {
-  return repository.getMainByUser(userId);
-}
-
-export async function updateWalletBalance(
-  walletId: string,
-  nextBalance: number,
-): Promise<void> {
-  await repository.updateBalance(walletId, nextBalance);
-}

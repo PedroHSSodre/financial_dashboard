@@ -1,10 +1,11 @@
-import type { CreditCard, Transaction, Wallet } from "@/lib/types";
+import type { CreditCard, Transaction, TransactionDetails, Wallet } from "@/lib/types";
 
 export interface TransactionRepository {
   listByUserOrderedDesc(userId: string): Promise<Transaction[]>;
   create(transaction: Transaction): Promise<Transaction>;
   delete(transactionId: string): Promise<void>;
   efetivate(transactionId: string): Promise<void>;
+  getById(transactionId: string): Promise<TransactionDetails | undefined>;
 }
 
 export interface WalletRepository {

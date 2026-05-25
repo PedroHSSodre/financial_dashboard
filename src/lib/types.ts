@@ -28,6 +28,22 @@ export interface Transaction {
   creditCardId?: string;
 }
 
+export interface TransactionDetails {
+  id: string;
+  userId: string;
+  walletId: string;
+  type: TransactionType;
+  status: TransactionStatus;
+  description: string;
+  date: string;
+  value: number;
+  isCreditCard: boolean;
+  creditCardId?: string;
+  creditCard?: CreditCard;
+  wallet?: Wallet;
+}
+
+
 export interface CreditCard {
   id: string;
   userId: string;
