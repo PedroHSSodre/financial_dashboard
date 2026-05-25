@@ -64,9 +64,13 @@ export default function CreditCardsCard({
               </Stack>
 
               <Stack direction="row" spacing={3} sx={{ mt: 1 }}>
-                <Detail label="Limite" value={formatCurrencyBRL(card.limit)} />
                 <Detail label="Fechamento" value={`Dia ${card.closingDay}`} />
                 <Detail label="Vencimento" value={`Dia ${card.dueDay}`} />
+              </Stack>
+              
+              <Stack direction="row" spacing={3} sx={{ mt: 1 }}>
+                <Detail label="Limite" value={formatCurrencyBRL(card.limit)} />
+                <Detail label="Limite Restante" value={formatCurrencyBRL(card.remainingLimit)} />
                 <Detail label="Utilizado" value={formatCurrencyBRL(card.limitUsed)} />
               </Stack>
             </Paper>

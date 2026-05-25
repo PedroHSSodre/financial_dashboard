@@ -54,6 +54,7 @@ export interface CreditCard {
   limitUsed: number;
   closingDay: number;
   dueDay: number;
+  remainingLimit: number;
 }
 
 export interface DashboardData {

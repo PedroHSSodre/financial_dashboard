@@ -17,7 +17,7 @@ export class DexieCreditCardsRepository implements CreditCardRepository {
   }
 
   async updateLimit(creditCardId: string, nextLimit: number): Promise<void> {
-    await db.creditCards.update(creditCardId, { limit: nextLimit });
+    await db.creditCards.update(creditCardId, { remainingLimit: nextLimit });
   }
 
   async updateUsedLimit(creditCardId: string, nextUsedLimit: number): Promise<void> {

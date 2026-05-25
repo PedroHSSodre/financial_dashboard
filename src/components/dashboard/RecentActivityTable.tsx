@@ -58,6 +58,9 @@ export default function RecentActivityTable({
     refresh();
   };
   const handleEfetivate = async (transaction: Transaction) => {
+    if(transaction.status === "efetivada") {
+      return;
+    }
     await efetivateTransaction(transaction);
     refresh();
   };

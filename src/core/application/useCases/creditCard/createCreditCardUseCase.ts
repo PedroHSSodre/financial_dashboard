@@ -34,6 +34,7 @@ export function makeCreateCreditCardUseCase({
       limitUsed: input.limitUsed,
       closingDay: input.closingDay,
       dueDay: input.dueDay,
+      remainingLimit: input.limit - input.limitUsed,
     };
 
     await creditCardRepository.create(creditCard);

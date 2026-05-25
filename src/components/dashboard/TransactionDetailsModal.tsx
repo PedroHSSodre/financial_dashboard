@@ -50,12 +50,6 @@ export default function TransactionDetailsModal({
           <Stack spacing={1.5}>
             <Typography variant="subtitle2">Dados da transação</Typography>
             <Typography variant="body2">
-              <strong>Usuário:</strong> {transaction.userId}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Carteira:</strong> {transaction.walletId}
-            </Typography>
-            <Typography variant="body2">
               <strong>Descrição:</strong> {transaction.description}
             </Typography>
             <Typography variant="body2">
@@ -73,19 +67,12 @@ export default function TransactionDetailsModal({
             <Typography variant="body2">
               <strong>Compra no cartão:</strong> {transaction.isCreditCard ? "Sim" : "Não"}
             </Typography>
-            <Typography variant="body2">
-              <strong>Cartão:</strong> {transaction.creditCardId ?? "-"}
-            </Typography>
 
             <Divider />
 
             <Typography variant="subtitle2">Carteira</Typography>
             <Typography variant="body2">
               <strong>Nome:</strong> {transaction.wallet?.name ?? "-"}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Saldo:</strong>{" "}
-              {transaction.wallet ? formatCurrencyBRL(transaction.wallet.balance) : "-"}
             </Typography>
             <Typography variant="body2">
               <strong>Moeda:</strong> {transaction.wallet?.currency ?? "-"}

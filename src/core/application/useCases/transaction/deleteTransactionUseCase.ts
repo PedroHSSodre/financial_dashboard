@@ -62,7 +62,7 @@ export function makeDeleteTransactionUseCase({
         throw new Error("Cartão de crédito não encontrado.");
       }
 
-      const nextLimit = revertTransactionFromBalance(creditCard.limit, input);
+      const nextLimit = revertTransactionFromBalance(creditCard.remainingLimit, input);
       await creditCardRepository.updateLimit(creditCard.id, nextLimit);
 
       const nextUsedLimit = revertTransactionFromUsedLimit(creditCard.limitUsed, input);
