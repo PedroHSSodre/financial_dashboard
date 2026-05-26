@@ -1,22 +1,19 @@
-import type {
-  Transaction,
-  TransactionStatus,
-  TransactionType,
-} from "@/lib/types";
+
 import type {
   CreditCardRepository,
   TransactionRepository,
   WalletRepository,
 } from "@/core/application/ports/financialRepositories";
-import { applyTransactionToBalance } from "@/core/domain/services/walletBalance";
-import { applyTransactionToUsedLimit } from "@/core/domain/services/creditCardBalance";
+import { Transaction, TransactionStatus, TransactionType } from "@/core/domain/entities/transaction";
+import { Wallet } from "@/core/domain/entities/wallet";
+import { CreditCard } from "@/core/domain/entities/creditCard";
 
 export interface CreateTransactionInput {
   userId: string;
   walletId: string;
   type: TransactionType;
   status: TransactionStatus;
-  description: string;
+  description?: string;
   date: string;
   value: number;
   isCreditCard: boolean;
@@ -39,25 +36,24 @@ export function makeCreateTransactionUseCase({
   generateId,
 }: CreateTransactionDependencies) {
   return async function createTransaction(input: CreateTransactionInput) {
-    validateInput(input);
-
-    const transaction: Transaction = {
+    const transaction = Transaction.create({
       id: generateId(),
       userId: input.userId,
       walletId: input.walletId,
       type: input.type,
       status: input.status,
-      description: input.description.trim() || "Sem descrição",
+      description: input.description,
       date: input.date,
       value: input.value,
       isCreditCard: input.isCreditCard,
-      creditCardId: input.isCreditCard ? input.creditCardId : undefined,
-    };
+      creditCardId: input.creditCardId,
+    });
+    const tx = transaction.toPrimitives();
 
     await runInTransaction(async () => {
-      await transactionRepository.create(transaction);
+      await transactionRepository.create(tx);
 
-      if (transaction.status === "pendente") {
+      if (transaction.isPending()) {
         return;
       }
 
@@ -68,10 +64,11 @@ export function makeCreateTransactionUseCase({
       if (!wallet) {
         throw new Error("Carteira não encontrada.");
       }
+      const walletEntity = Wallet.rehydrate(wallet);
 
       if(!transaction.isCreditCard) {
-        const nextBalance = applyTransactionToBalance(wallet.balance, transaction);
-        await walletRepository.updateBalance(wallet.id, nextBalance);
+        walletEntity.applyTransaction(tx);
+        await walletRepository.updateBalance(walletEntity.id, walletEntity.balance);
         return;
       }
 
@@ -84,37 +81,13 @@ export function makeCreateTransactionUseCase({
       if (!creditCard) {
         throw new Error("Cartão de crédito não encontrado.");
       }
+      const creditCardEntity = CreditCard.rehydrate(creditCard);
+      creditCardEntity.applyPurchase(transaction.value);
+      walletEntity.applyTransaction(tx);
 
-      if(transaction.value > creditCard.remainingLimit) {
-        throw new Error("O valor da transação não pode ser maior que o limite restante do cartão.");
-      }
-
-      const nextLimit = applyTransactionToBalance(creditCard.limit - creditCard.limitUsed, transaction);
-      await creditCardRepository.updateRemainingLimit(creditCard.id, nextLimit);
-
-      const nextUsedLimit = applyTransactionToUsedLimit(creditCard.limitUsed, transaction);
-      await creditCardRepository.updateUsedLimit(creditCard.id, nextUsedLimit);
-
-      const nextBalance = applyTransactionToBalance(wallet.balance, transaction);
-      await walletRepository.updateBalance(wallet.id, nextBalance);
+      await creditCardRepository.updateRemainingLimit(creditCardEntity.id, creditCardEntity.remainingLimit);
+      await creditCardRepository.updateUsedLimit(creditCardEntity.id, creditCardEntity.limitUsed);
+      await walletRepository.updateBalance(walletEntity.id, walletEntity.balance);
     });
   };
-}
-
-function validateInput(input: CreateTransactionInput) {
-  if (!input.walletId) {
-    throw new Error("Selecione uma carteira.");
-  }
-
-  if (!input.date) {
-    throw new Error("Informe a data da movimentação.");
-  }
-
-  if (!Number.isFinite(input.value) || input.value <= 0) {
-    throw new Error("O valor deve ser maior que zero.");
-  }
-
-  if(input.isCreditCard && !input.creditCardId) {
-    throw new Error("Informe o cartão de crédito.");
-  }
 }

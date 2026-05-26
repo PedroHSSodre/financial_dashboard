@@ -1,4 +1,9 @@
-import { CreditCardRepository, WalletRepository, TransactionRepository } from "../../ports/financialRepositories";
+import { 
+    CreditCardRepository, 
+    WalletRepository, 
+    TransactionRepository 
+} from "@/core/application/ports/financialRepositories";
+import { Transaction } from "@/core/domain/entities/transaction";
 
 interface GetTransactionDependencies {
     transactionRepository: TransactionRepository;
@@ -12,10 +17,23 @@ export function makeGetTransactionUseCase({
     creditCardRepository,
 }: GetTransactionDependencies) {
     return async function getTransaction(transactionId: string) {
-        const transaction = await transactionRepository.getById(transactionId);
-        if (!transaction) {
+        const transactionData = await transactionRepository.getById(transactionId);
+        if (!transactionData) {
             throw new Error("Transação não encontrada.");
         }
+        const transaction = Transaction.rehydrate({
+            id: transactionData.id,
+            userId: transactionData.userId,
+            walletId: transactionData.walletId,
+            type: transactionData.type,
+            status: transactionData.status,
+            description: transactionData.description,
+            date: transactionData.date,
+            value: transactionData.value,
+            isCreditCard: transactionData.isCreditCard,
+            creditCardId: transactionData.creditCardId,
+        });
+        const tx = transaction.toPrimitives();
         const wallet = await walletRepository.getById(transaction.walletId);
         if (!wallet) {
             throw new Error("Carteira não encontrada.");
@@ -23,7 +41,7 @@ export function makeGetTransactionUseCase({
 
         if(!transaction.isCreditCard) {
             return {
-                ...transaction,
+                ...tx,
                 wallet,
             };
         }
@@ -37,7 +55,7 @@ export function makeGetTransactionUseCase({
             throw new Error("Cartão de crédito não encontrado.");
         }
         return {
-            ...transaction,
+            ...tx,
             wallet,
             creditCard,
         };

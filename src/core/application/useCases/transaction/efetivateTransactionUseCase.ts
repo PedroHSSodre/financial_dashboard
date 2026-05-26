@@ -1,28 +1,13 @@
 import type {
-  Transaction,
-  TransactionStatus,
-  TransactionType,
-} from "@/lib/types";
-import type {
   CreditCardRepository,
   TransactionRepository,
   WalletRepository,
 } from "@/core/application/ports/financialRepositories";
-import { applyTransactionToBalance } from "@/core/domain/services/walletBalance";
-import { applyTransactionToUsedLimit } from "@/core/domain/services/creditCardBalance";
+import { Transaction, TransactionProps } from "@/core/domain/entities/transaction";
+import { Wallet } from "@/core/domain/entities/wallet";
+import { CreditCard } from "@/core/domain/entities/creditCard";
 
-export interface EfetivateTransactionInput {
-  id: string;
-  userId: string;
-  walletId: string;
-  type: TransactionType;
-  status: TransactionStatus;
-  description: string;
-  date: string;
-  value: number;
-  isCreditCard: boolean;
-  creditCardId?: string;
-}
+export type EfetivateTransactionInput = TransactionProps;
 
 interface EfetivateTransactionDependencies {
   transactionRepository: TransactionRepository;
@@ -38,43 +23,52 @@ export function makeEfetivateTransactionUseCase({
   runInTransaction,
 }: EfetivateTransactionDependencies) {
   return async function efetivateTransaction(input: EfetivateTransactionInput) {
+    const transaction = Transaction.rehydrate({
+      id: input.id,
+      userId: input.userId,
+      walletId: input.walletId,
+      type: input.type,
+      status: input.status,
+      description: input.description,
+      date: input.date,
+      value: input.value,
+      isCreditCard: input.isCreditCard,
+      creditCardId: input.creditCardId,
+    });
+    transaction.effectivate();
+    const tx = transaction.toPrimitives();
 
     await runInTransaction(async () => {
-      if (input.status !== "pendente") {
-        throw new Error("Transação já efetivada.");
-      }
+      await transactionRepository.efetivate(transaction.id);
 
-      await transactionRepository.efetivate(input.id);
-
-      const wallet = await walletRepository.getById(input.walletId);
+      const wallet = await walletRepository.getById(transaction.walletId);
       if (!wallet) {
         throw new Error("Carteira não encontrada.");
       }
-      
-      if(!input.isCreditCard) {
-        const nextBalance = applyTransactionToBalance(wallet.balance, input);
-        await walletRepository.updateBalance(wallet.id, nextBalance);
+
+      const walletEntity = Wallet.rehydrate(wallet);
+      if(!transaction.isCreditCard) {
+        walletEntity.applyTransaction(tx);
+        await walletRepository.updateBalance(walletEntity.id, walletEntity.balance);
         return;
       }
 
-      if(!input.creditCardId) {
+      if(!transaction.creditCardId) {
         throw new Error("Cartão de crédito não informado.");
       }
 
-      const creditCard = await creditCardRepository.getById(input.creditCardId);
-      
+      const creditCard = await creditCardRepository.getById(transaction.creditCardId);
       if (!creditCard) {
         throw new Error("Cartão de crédito não encontrado.");
       }
 
-      const nextLimit = applyTransactionToBalance(creditCard.limit, input);
-      await creditCardRepository.updateRemainingLimit(creditCard.id, nextLimit);
+      const creditCardEntity = CreditCard.rehydrate(creditCard);
+      creditCardEntity.applyPurchase(transaction.value);
+      walletEntity.applyTransaction(tx);
 
-      const nextUsedLimit = applyTransactionToUsedLimit(creditCard.limitUsed, input);
-      await creditCardRepository.updateUsedLimit(creditCard.id, nextUsedLimit);
-
-      const nextBalance = applyTransactionToBalance(wallet.balance, input);
-      await walletRepository.updateBalance(wallet.id, nextBalance);
+      await creditCardRepository.updateRemainingLimit(creditCardEntity.id, creditCardEntity.remainingLimit);
+      await creditCardRepository.updateUsedLimit(creditCardEntity.id, creditCardEntity.limitUsed);
+      await walletRepository.updateBalance(walletEntity.id, walletEntity.balance);
     });
   };
 }
