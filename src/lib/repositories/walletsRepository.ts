@@ -1,18 +1,18 @@
 import { db } from "@/lib/db/indexedDb";
+import { WalletDto } from "@/core/application/dto/wallet";
 import type { WalletRepository } from "@/core/application/ports/financialRepositories";
-import type { Wallet } from "@/lib/types";
 
 export class DexieWalletsRepository implements WalletRepository {
-  async listByUser(userId: string): Promise<Wallet[]> {
+  async listByUser(userId: string): Promise<WalletDto[]> {
     return db.wallets.where("userId").equals(userId).toArray();
   }
 
-  async getMainByUser(userId: string): Promise<Wallet | undefined> {
+  async getMainByUser(userId: string): Promise<WalletDto | undefined> {
     const wallets = await this.listByUser(userId);
     return wallets[0];
   }
 
-  async getById(walletId: string): Promise<Wallet | undefined> {
+  async getById(walletId: string): Promise<WalletDto | undefined> {
     return db.wallets.get(walletId);
   }
 

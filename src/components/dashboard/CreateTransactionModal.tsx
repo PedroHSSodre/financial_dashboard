@@ -16,13 +16,15 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { createTransaction } from "@/lib/useCases/transaction/createTransaction";
-import type { CreditCard, TransactionStatus, TransactionType, Wallet } from "@/lib/types";
+import type { CreditCardDto } from "@/core/application/dto/creditCard";
+import type { WalletDto } from "@/core/application/dto/wallet";
+import type { TransactionType, TransactionStatus } from "@/core/application/dto/transaction";
 
 interface CreateTransactionModalProps {
   open: boolean;
   userId: string;
-  wallets: Wallet[];
-  creditCards: CreditCard[];
+  wallets: WalletDto[];
+  creditCards: CreditCardDto[];
   onClose: () => void;
   onCreated: () => Promise<void>;
 }

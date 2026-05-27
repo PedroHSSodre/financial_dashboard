@@ -1,18 +1,18 @@
 import { db } from "@/lib/db/indexedDb";
+import { CreditCardDto } from "@/core/application/dto/creditCard";
 import type { CreditCardRepository } from "@/core/application/ports/financialRepositories";
-import type { CreditCard } from "@/lib/types";
 
 export class DexieCreditCardsRepository implements CreditCardRepository {
-  async listByUser(userId: string): Promise<CreditCard[]> {
+  async listByUser(userId: string): Promise<CreditCardDto[]> {
     return db.creditCards.where("userId").equals(userId).toArray();
   }
 
-  async create(creditCard: CreditCard): Promise<CreditCard> {
+  async create(creditCard: CreditCardDto): Promise<CreditCardDto> {
     await db.creditCards.add(creditCard);
     return creditCard;
   }
 
-  async getById(creditCardId: string): Promise<CreditCard | undefined> {
+  async getById(creditCardId: string): Promise<CreditCardDto | undefined> {
     return db.creditCards.get(creditCardId);
   }
 
@@ -24,7 +24,7 @@ export class DexieCreditCardsRepository implements CreditCardRepository {
     await db.creditCards.update(creditCardId, { limitUsed: nextUsedLimit });
   }
 
-  async update(creditCardId: string, creditCard: CreditCard): Promise<void> {
+  async update(creditCardId: string, creditCard: CreditCardDto): Promise<void> {
     await db.creditCards.update(creditCardId, creditCard);
   }
 }

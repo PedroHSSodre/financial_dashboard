@@ -16,13 +16,14 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { updateCreditCard } from "@/lib/useCases/creditCard/updateCreditCard";
-import type { CreditCard, Wallet } from "@/lib/types";
+import type { CreditCardDto } from "@/core/application/dto/creditCard";
+import type { WalletDto } from "@/core/application/dto/wallet";
 
 interface EditCreditCardModalProps {
   open: boolean;
-  card: CreditCard | null;
+  card: CreditCardDto | null;
   userId: string;
-  wallets: Wallet[];
+  wallets: WalletDto[];
   onClose: () => void;
   onUpdated: () => Promise<void>;
 }

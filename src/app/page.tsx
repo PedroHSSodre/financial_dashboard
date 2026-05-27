@@ -11,12 +11,12 @@ import SummaryCard from "@/components/dashboard/SummaryCard";
 import Header from "@/components/layout/Header";
 import { formatCurrencyBRL } from "@/lib/format";
 import { useTransactions } from "@/hooks/useTransactions";
-import type { CreditCard } from "@/lib/types";
+import type { CreditCardDto } from "@/core/application/dto/creditCard";
 
 export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCreateCreditCardModalOpen, setIsCreateCreditCardModalOpen] = useState(false);
-  const [editingCreditCard, setEditingCreditCard] = useState<CreditCard | null>(null);
+  const [editingCreditCard, setEditingCreditCard] = useState<CreditCardDto | null>(null);
   const {
     mainWallet,
     wallets,

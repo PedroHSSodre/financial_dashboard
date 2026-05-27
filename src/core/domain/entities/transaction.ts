@@ -1,8 +1,5 @@
 import { TransactionDomainError } from "../errors/TransactionDomainError";
-
-export type TransactionType = "entrada" | "saida";
-export type TransactionStatus = "pendente" | "efetivada";
-
+import { TransactionStatus, TransactionType } from "@/core/application/dto/transaction";
 export interface TransactionProps {
   id: string;
   userId: string;

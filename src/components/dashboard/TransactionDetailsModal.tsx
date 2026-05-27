@@ -17,13 +17,13 @@ import {
   getStatusLabel,
   getTransactionTypeLabel,
 } from "@/lib/format";
-import type { TransactionDetails } from "@/lib/types";
+import type { TransactionDetailsDto } from "@/core/application/dto/transaction";
 
 interface TransactionDetailsModalProps {
   open: boolean;
   isLoading: boolean;
   errorMessage: string;
-  transaction: TransactionDetails | null;
+  transaction: TransactionDetailsDto | null;
   onClose: () => void;
 }
 

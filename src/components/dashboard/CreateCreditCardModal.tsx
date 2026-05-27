@@ -16,12 +16,12 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { createCreditCard } from "@/lib/useCases/creditCard/createCreditCard";
-import type { Wallet } from "@/lib/types";
+import type { WalletDto } from "@/core/application/dto/wallet";
 
 interface CreateCreditCardModalProps {
   open: boolean;
   userId: string;
-  wallets: Wallet[];
+  wallets: WalletDto[];
   onClose: () => void;
   onCreated: () => Promise<void>;
 }

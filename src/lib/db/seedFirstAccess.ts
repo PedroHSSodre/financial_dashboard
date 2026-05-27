@@ -1,5 +1,5 @@
 import { db } from "@/lib/db/indexedDb";
-import type { Wallet } from "@/lib/types";
+import type { WalletDto } from "@/core/application/dto/wallet";
 
 export const DEFAULT_USER_ID = "user-1";
 
@@ -9,7 +9,7 @@ export async function seedFirstAccess(userId: string = DEFAULT_USER_ID) {
     return;
   }
 
-  const defaultWallet: Wallet = {
+  const defaultWallet: WalletDto = {
     id: "wallet-1",
     userId,
     name: "Carteira principal",

@@ -4,12 +4,14 @@ import type {
   TransactionRepository,
   WalletRepository,
 } from "@/core/application/ports/financialRepositories";
-import type { CreditCard, Transaction, Wallet } from "@/lib/types";
+import { WalletDto } from "@/core/application/dto/wallet";
+import { TransactionDto } from "@/core/application/dto/transaction";
+import { CreditCardDto } from "@/core/application/dto/creditCard";
 
 export interface DashboardDataOutput {
-  wallets: Wallet[];
-  transactions: Transaction[];
-  creditCards: CreditCard[];
+  wallets: WalletDto[];
+  transactions: TransactionDto[];
+  creditCards: CreditCardDto[];
 }
 
 interface LoadDashboardDataDependencies {

@@ -6,14 +6,14 @@ import {
   makeSaveUserProfileUseCase,
 } from "@/core/application/useCases/user/userProfileUseCases";
 import { LocalStorageUserProfileRepository } from "@/lib/repositories/userProfileRepository";
-import type { UserProfile } from "@/lib/types";
+import type { UserProfileDto } from "@/core/application/dto/userProfile";
 
 const userProfileRepository = new LocalStorageUserProfileRepository();
 const getUserProfile = makeGetUserProfileUseCase(userProfileRepository);
 const saveUserProfile = makeSaveUserProfileUseCase(userProfileRepository);
 
 export function useUserProfile() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfileDto | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function useUserProfile() {
     setIsLoaded(true);
   }, []);
 
-  const saveProfile = (nextProfile: UserProfile) => {
+  const saveProfile = (nextProfile: UserProfileDto) => {
     saveUserProfile(nextProfile);
     setProfile(nextProfile);
   };

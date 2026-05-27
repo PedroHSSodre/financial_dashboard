@@ -2,15 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DEFAULT_USER_ID } from "@/lib/db/seedFirstAccess";
-import type { CreditCard, Transaction, Wallet } from "@/lib/types";
+import type { CreditCardDto } from "@/core/application/dto/creditCard";
+import type { TransactionDto, TransactionType } from "@/core/application/dto/transaction";
+import type { WalletDto } from "@/core/application/dto/wallet";
 import { loadDashboardData } from "@/lib/useCases/loadDashboardData";
 
 export function useTransactions() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [wallets, setWallets] = useState<Wallet[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
+  const [wallets, setWallets] = useState<WalletDto[]>([]);
+  const [transactions, setTransactions] = useState<TransactionDto[]>([]);
+  const [creditCards, setCreditCards] = useState<CreditCardDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const refresh = useCallback(async () => {
@@ -88,8 +90,8 @@ export function useTransactions() {
 }
 
 function sumTransactionsByType(
-  items: Transaction[],
-  type: "entrada" | "saida",
+  items: TransactionDto[],
+  type: TransactionType,
 ): number {
   return items
     .filter((item) => item.type === type)

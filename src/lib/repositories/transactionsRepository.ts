@@ -1,9 +1,9 @@
 import { db } from "@/lib/db/indexedDb";
+import { TransactionDto } from "@/core/application/dto/transaction";
 import type { TransactionRepository } from "@/core/application/ports/financialRepositories";
-import type { Transaction } from "@/lib/types";
 
 export class DexieTransactionsRepository implements TransactionRepository {
-  async listByUserOrderedDesc(userId: string): Promise<Transaction[]> {
+  async listByUserOrderedDesc(userId: string): Promise<TransactionDto[]> {
     const transactions = await this.listByUser(userId);
     return transactions.sort(
       (left, right) =>
@@ -11,7 +11,7 @@ export class DexieTransactionsRepository implements TransactionRepository {
     );
   }
 
-  async create(transaction: Transaction): Promise<Transaction> {
+  async create(transaction: TransactionDto): Promise<TransactionDto> {
     await db.transactions.add(transaction);
     return transaction;
   }
@@ -23,11 +23,11 @@ export class DexieTransactionsRepository implements TransactionRepository {
     await db.transactions.update(transactionId, { status: "efetivada" });
   }
 
-  private async listByUser(userId: string): Promise<Transaction[]> {
+  private async listByUser(userId: string): Promise<TransactionDto[]> {
     return db.transactions.where("userId").equals(userId).toArray();
   }
 
-  async getById(transactionId: string): Promise<Transaction | undefined> {
+  async getById(transactionId: string): Promise<TransactionDto | undefined> {
     return db.transactions.get(transactionId);
   }
 }

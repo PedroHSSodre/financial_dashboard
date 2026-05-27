@@ -1,4 +1,4 @@
-import type { TransactionStatus, TransactionType } from "@/lib/types";
+import type { TransactionStatus, TransactionType } from "@/core/application/dto/transaction";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",

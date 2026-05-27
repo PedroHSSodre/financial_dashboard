@@ -1,6 +1,7 @@
-import type { UserProfile } from "@/lib/types";
+import { UserProfileDto } from "../dto/userProfile";
+
 
 export interface UserProfileRepository {
-  get(): UserProfile | null;
-  save(profile: UserProfile): void;
+  get(): UserProfileDto | null;
+  save(profile: UserProfileDto): void;
 }

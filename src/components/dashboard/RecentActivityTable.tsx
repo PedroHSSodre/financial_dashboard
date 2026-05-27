@@ -20,7 +20,7 @@ import {
   formatDateBR,
   getStatusLabel,
 } from "@/lib/format";
-import type { Transaction, TransactionDetails } from "@/lib/types";
+import type { TransactionDto, TransactionDetailsDto } from "@/core/application/dto/transaction";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { deleteTransaction } from "@/lib/useCases/transaction/deleteTransaction";
@@ -30,8 +30,8 @@ import { useState } from "react";
 import TransactionDetailsModal from "@/components/dashboard/TransactionDetailsModal";
 
 interface RecentActivityTableProps {
-  transactions: Transaction[];
-  paginatedTransactions: Transaction[];
+  transactions: TransactionDto[];
+  paginatedTransactions: TransactionDto[];
   page: number;
   rowsPerPage: number;
   onPageChange: (value: number) => void;
@@ -50,14 +50,14 @@ export default function RecentActivityTable({
 }: RecentActivityTableProps) {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<TransactionDetails | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<TransactionDetailsDto | null>(null);
   const [detailsError, setDetailsError] = useState("");
 
-  const handleDelete = async (transaction: Transaction) => {
+  const handleDelete = async (transaction: TransactionDto) => {
     await deleteTransaction(transaction);
     refresh();
   };
-  const handleEfetivate = async (transaction: Transaction) => {
+  const handleEfetivate = async (transaction: TransactionDto) => {
     if(transaction.status === "efetivada") {
       return;
     }

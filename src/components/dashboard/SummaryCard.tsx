@@ -2,12 +2,13 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import Card from "@/components/ui/Card";
 import { formatCurrencyBRL, formatDateBR } from "@/lib/format";
-import type { Transaction, Wallet } from "@/lib/types";
+import type { TransactionDto } from "@/core/application/dto/transaction";
+import type { WalletDto } from "@/core/application/dto/wallet";
 
 interface SummaryCardProps {
-  wallet?: Wallet;
-  latestEntries: Transaction[];
-  latestExits: Transaction[];
+  wallet?: WalletDto;
+  latestEntries: TransactionDto[];
+  latestExits: TransactionDto[];
   onNewRecord: () => void;
   isDisabled?: boolean;
 }
@@ -60,7 +61,7 @@ export default function SummaryCard({
 
 interface TransactionMiniListProps {
   title: string;
-  items: Transaction[];
+  items: TransactionDto[];
 }
 
 function TransactionMiniList({ title, items }: TransactionMiniListProps) {

@@ -4,9 +4,10 @@ import type {
   TransactionRepository,
   WalletRepository,
 } from "@/core/application/ports/financialRepositories";
-import { Transaction, TransactionStatus, TransactionType } from "@/core/domain/entities/transaction";
+import { Transaction } from "@/core/domain/entities/transaction";
 import { Wallet } from "@/core/domain/entities/wallet";
 import { CreditCard } from "@/core/domain/entities/creditCard";
+import { TransactionStatus, TransactionType } from "@/core/application/dto/transaction";
 
 export interface CreateTransactionInput {
   userId: string;

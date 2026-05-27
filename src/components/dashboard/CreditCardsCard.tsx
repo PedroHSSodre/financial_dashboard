@@ -10,12 +10,12 @@ import {
 } from "@mui/material";
 import Card from "@/components/ui/Card";
 import { formatCurrencyBRL } from "@/lib/format";
-import type { CreditCard } from "@/lib/types";
+import type { CreditCardDto } from "@/core/application/dto/creditCard";
 
 interface CreditCardsCardProps {
-  cards: CreditCard[];
+  cards: CreditCardDto[];
   onNewCard: () => void;
-  onEditCard: (card: CreditCard) => void;
+  onEditCard: (card: CreditCardDto) => void;
   isDisabled?: boolean;
 }
 
