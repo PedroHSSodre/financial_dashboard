@@ -43,6 +43,7 @@ export function makeGetTransactionUseCase({
             return {
                 ...tx,
                 wallet,
+                creditCard: undefined,
             };
         }
 

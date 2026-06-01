@@ -9,8 +9,9 @@ function makeSut() {
     listByUser: jest.fn(),
     create: jest.fn(async (creditCard) => creditCard),
     getById: jest.fn(),
-    updateLimit: jest.fn(),
+    updateRemainingLimit: jest.fn(),
     updateUsedLimit: jest.fn(),
+    update: jest.fn(),
   };
 
   const generateId = jest.fn(() => "credit-card-id");
@@ -147,6 +148,16 @@ describe("makeCreateCreditCardUseCase", () => {
 
     await expect(createCreditCardUseCase({ ...validInput, closingDay: 20, dueDay: 20 })).rejects.toThrow(
       "O dia de fechamento e o dia de vencimento não podem ser o mesmo dia.",
+    );
+
+    expect(creditCardRepository.create).not.toHaveBeenCalled();
+  });
+
+  it("deve falhar quando limite utilizado for maior que o limite do cartao", async () => {
+    const { createCreditCardUseCase, validInput, creditCardRepository } = makeSut();
+
+    await expect(createCreditCardUseCase({ ...validInput, limitUsed: 6000 })).rejects.toThrow(
+      "O limite utilizado não pode ser maior que o limite do cartão.",
     );
 
     expect(creditCardRepository.create).not.toHaveBeenCalled();

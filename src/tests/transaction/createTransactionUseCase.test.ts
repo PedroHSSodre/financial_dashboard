@@ -14,6 +14,7 @@ function makeSut() {
     create: jest.fn(async (transaction) => transaction),
     delete: jest.fn(),
     efetivate: jest.fn(),
+    getById: jest.fn(),
   };
 
   const walletRepository: WalletRepository = {
@@ -25,10 +26,11 @@ function makeSut() {
 
   const creditCardRepository: CreditCardRepository = {
     listByUser: jest.fn(),
-    create: jest.fn(),
+    create: jest.fn(async (creditCard) => creditCard),
     getById: jest.fn(),
-    updateLimit: jest.fn(),
+    updateRemainingLimit: jest.fn(),
     updateUsedLimit: jest.fn(),
+    update: jest.fn(),
   };
 
   const runInTransactionMock = jest.fn(async (operation: () => Promise<unknown>) => operation());
@@ -61,6 +63,7 @@ function makeSut() {
     createTransaction,
     transactionRepository,
     walletRepository,
+    creditCardRepository,
     runInTransactionMock,
     generateId,
     validInput,
@@ -158,6 +161,79 @@ describe("makeCreateTransactionUseCase", () => {
     (walletRepository.getMainByUser as jest.Mock).mockResolvedValue(undefined);
 
     await expect(createTransaction(validInput)).rejects.toThrow("Carteira não encontrada.");
+    expect(walletRepository.updateBalance).not.toHaveBeenCalled();
+  });
+
+  it("deve processar transacao de cartao e atualizar limite e saldo", async () => {
+    const { createTransaction, walletRepository, creditCardRepository, validInput } = makeSut();
+
+    (walletRepository.getById as jest.Mock).mockResolvedValue({
+      id: "wallet-id",
+      userId: "user-id",
+      name: "Carteira principal",
+      balance: 1000,
+      currency: "BRL",
+    });
+    (creditCardRepository.getById as jest.Mock).mockResolvedValue({
+      id: "card-id",
+      userId: "user-id",
+      walletId: "wallet-id",
+      name: "Card",
+      brand: "Visa",
+      limit: 2000,
+      limitUsed: 300,
+      closingDay: 10,
+      dueDay: 20,
+      remainingLimit: 1700,
+    });
+
+    await createTransaction({
+      ...validInput,
+      type: "saida",
+      isCreditCard: true,
+      creditCardId: "card-id",
+      value: 200,
+    });
+
+    expect(creditCardRepository.updateRemainingLimit).toHaveBeenCalledWith("card-id", 1500);
+    expect(creditCardRepository.updateUsedLimit).toHaveBeenCalledWith("card-id", 500);
+    expect(walletRepository.updateBalance).toHaveBeenCalledWith("wallet-id", 800);
+  });
+
+  it("deve falhar quando transacao de cartao nao informar creditCardId", async () => {
+    const { createTransaction, transactionRepository, validInput } = makeSut();
+
+    await expect(
+      createTransaction({
+        ...validInput,
+        type: "saida",
+        isCreditCard: true,
+        creditCardId: undefined,
+      }),
+    ).rejects.toThrow("Transacao de cartao exige creditCardId.");
+    expect(transactionRepository.create).not.toHaveBeenCalled();
+  });
+
+  it("deve falhar quando cartao de credito nao for encontrado", async () => {
+    const { createTransaction, walletRepository, creditCardRepository, validInput } = makeSut();
+
+    (walletRepository.getById as jest.Mock).mockResolvedValue({
+      id: "wallet-id",
+      userId: "user-id",
+      name: "Carteira principal",
+      balance: 1000,
+      currency: "BRL",
+    });
+    (creditCardRepository.getById as jest.Mock).mockResolvedValue(undefined);
+
+    await expect(
+      createTransaction({
+        ...validInput,
+        type: "saida",
+        isCreditCard: true,
+        creditCardId: "card-id",
+      }),
+    ).rejects.toThrow("Cartão de crédito não encontrado.");
     expect(walletRepository.updateBalance).not.toHaveBeenCalled();
   });
 
