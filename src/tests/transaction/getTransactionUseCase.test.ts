@@ -174,7 +174,7 @@ describe("makeGetTransactionUseCase", () => {
       currency: "BRL",
     });
 
-    await expect(getTransaction("tx-id")).rejects.toThrow("Cartão de crédito não informado.");
+    await expect(getTransaction("tx-id")).rejects.toThrow("Transacao de cartao exige creditCardId.");
   });
 
   it("deve falhar quando cartao nao for encontrado", async () => {
