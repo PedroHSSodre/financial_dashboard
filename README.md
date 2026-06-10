@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dashboard Financeira
 
-## Getting Started
+Projeto desenvolvido para fins de estudo e portfólio, com foco em aplicar conceitos de Clean Architecture no front-end usando React e Next.js.
 
-First, run the development server:
+A ideia geral é construir uma dashboard financeira onde o usuário consiga cadastrar receitas e despesas, organizando os lançamentos por cartão de crédito ou diretamente pela conta. O objetivo é exercitar uma separação clara entre regras de negócio, casos de uso, portas de acesso a dados e a camada de interface.
+
+## Status do Projeto
+
+O projeto ainda está em desenvolvimento e não representa uma versão final. Algumas funcionalidades já fazem parte da proposta inicial, enquanto outras ainda serão adicionadas conforme a evolução dos estudos.
+
+Funcionalidades planejadas:
+
+- Criação e gerenciamento de diferentes contas.
+- Melhorias no fluxo de receitas e despesas.
+- Dockerização do projeto.
+- Deploy automatizado.
+
+## Tecnologias
+
+- [Next.js](https://nextjs.org/)
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Material UI](https://mui.com/)
+- [Dexie.js](https://dexie.org/)
+- [Jest](https://jestjs.io/)
+
+## Como Baixar e Executar
+
+Antes de começar, é necessário ter o [Node.js](https://nodejs.org/) instalado na máquina.
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/PedroHSSodre/financial_dashboard
+```
+
+Acesse a pasta do projeto:
+
+```bash
+cd dashboard
+```
+
+Instale as dependências:
+
+```bash
+npm install
+```
+
+Execute o servidor de desenvolvimento:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000) no navegador para visualizar a aplicação.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts Disponíveis
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev
+```
 
-## Learn More
+Inicia o servidor de desenvolvimento.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Gera a versão de produção da aplicação.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run start
+```
 
-## Deploy on Vercel
+Executa a versão de produção após o build.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run test
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Executa os testes automatizados.
+
+```bash
+npm run lint
+```
+
+Executa a análise de lint do projeto.
+
+## Objetivo de Estudo
+
+Este projeto é uma forma prática de aprofundar conhecimentos em arquitetura de software aplicada ao front-end, principalmente na organização de responsabilidades, desacoplamento entre camadas e criação de uma base mais fácil de testar e evoluir.
