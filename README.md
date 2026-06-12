@@ -12,7 +12,6 @@ Funcionalidades planejadas:
 
 - Criação e gerenciamento de diferentes contas.
 - Melhorias no fluxo de receitas e despesas.
-- Deploy automatizado.
 
 ## Tecnologias
 
@@ -51,7 +50,7 @@ Execute o servidor de desenvolvimento:
 npm run dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000) no navegador para visualizar a aplicação.
+Abra [http://localhost:3001](http://localhost:3001) no navegador para visualizar a aplicação.
 
 ## Como Executar com Docker
 
@@ -75,7 +74,7 @@ Também é possível executar com Docker Compose:
 docker compose up --build
 ```
 
-Abra [http://localhost:3000](http://localhost:3000) no navegador para visualizar a aplicação.
+Abra [http://localhost:3001](http://localhost:3001) no navegador para visualizar a aplicação.
 
 ## Scripts Disponíveis
 
