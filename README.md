@@ -12,7 +12,6 @@ Funcionalidades planejadas:
 
 - Criação e gerenciamento de diferentes contas.
 - Melhorias no fluxo de receitas e despesas.
-- Dockerização do projeto.
 - Deploy automatizado.
 
 ## Tecnologias
@@ -50,6 +49,30 @@ Execute o servidor de desenvolvimento:
 
 ```bash
 npm run dev
+```
+
+Abra [http://localhost:3000](http://localhost:3000) no navegador para visualizar a aplicação.
+
+## Como Executar com Docker
+
+Antes de começar, é necessário ter o [Docker](https://www.docker.com/) instalado na máquina.
+
+Construa a imagem:
+
+```bash
+docker build -t dashboard .
+```
+
+Execute o container:
+
+```bash
+docker run --rm -p 3001:3001 dashboard  
+```
+
+Também é possível executar com Docker Compose:
+
+```bash
+docker compose up --build
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) no navegador para visualizar a aplicação.

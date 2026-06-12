@@ -1,0 +1,9 @@
+services:
+  dashboard:
+    build:
+      context: .
+    image: dashboard:latest
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
