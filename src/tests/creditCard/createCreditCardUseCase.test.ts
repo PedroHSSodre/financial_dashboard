@@ -46,7 +46,7 @@ describe("makeCreateCreditCardUseCase", () => {
 
     const result = await createCreditCardUseCase(validInput);
 
-    expect(generateId).toHaveBeenCalledTimes(2);
+    expect(generateId).toHaveBeenCalledTimes(1);
     expect(creditCardRepository.create).toHaveBeenCalledWith({
       id: "credit-card-id",
       userId: validInput.userId,
