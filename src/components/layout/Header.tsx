@@ -40,7 +40,7 @@ export default function Header() {
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: 800 }}>
-          Finanças
+          Finanças App
         </Typography>
 
         <Stack
